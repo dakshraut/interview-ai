@@ -8,7 +8,7 @@ import { useParams } from 'react-router'
 const NAV_ITEMS = [
     { id: 'technical', label: 'Technical Questions', icon: (<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="16 18 22 12 16 6" /><polyline points="8 6 2 12 8 18" /></svg>) },
     { id: 'behavioral', label: 'Behavioral Questions', icon: (<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>) },
-    { id: 'roadmap', label: 'Road Map', icon: (<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11" /></svg>) },
+    { id: 'roadmap', label: 'Roadmap', icon: (<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11" /></svg>) },
 ]
 
 // ── Sub-components ────────────────────────────────────────────────────────────
@@ -30,7 +30,7 @@ const QuestionCard = ({ item, index }) => {
                         <p>{item.intention}</p>
                     </div>
                     <div className='q-card__section'>
-                        <span className='q-card__tag q-card__tag--answer'>Model Answer</span>
+                        <span className='q-card__tag q-card__tag--answer'>Answer Strategy</span>
                         <p>{item.answer}</p>
                     </div>
                 </div>
@@ -57,6 +57,14 @@ const RoadMapDay = ({ day }) => (
 )
 
 // ── Main Component ────────────────────────────────────────────────────────────
+const getMatchSummary = (score) => {
+    if (score >= 90) return 'Excellent match for this role'
+    if (score >= 75) return 'Strong match for this role'
+    if (score >= 55) return 'Partial match with clear gaps'
+    if (score >= 35) return 'Needs focused preparation'
+    return 'Low match for this role'
+}
+
 const Interview = () => {
     const [ activeNav, setActiveNav ] = useState('technical')
     const { report, loading, error, getResumePdf } = useInterview()
@@ -147,7 +155,7 @@ const Interview = () => {
                     {activeNav === 'roadmap' && (
                         <section>
                             <div className='content-header'>
-                                <h2>Preparation Road Map</h2>
+                                <h2>Preparation Roadmap</h2>
                                 <span className='content-header__count'>{report.preparationPlan.length}-day plan</span>
                             </div>
                             <div className='roadmap-list'>
@@ -171,7 +179,7 @@ const Interview = () => {
                             <span className='match-score__value'>{report.matchScore}</span>
                             <span className='match-score__pct'>%</span>
                         </div>
-                        <p className='match-score__sub'>Strong match for this role</p>
+                        <p className='match-score__sub'>{getMatchSummary(report.matchScore)}</p>
                     </div>
 
                     <div className='sidebar-divider' />

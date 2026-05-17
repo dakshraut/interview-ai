@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router'
 
 const Home = () => {
 
-    const { loading, error, generateReport,reports } = useInterview()
+    const { loading, error, generateReport, reports } = useInterview()
     const [ jobDescription, setJobDescription ] = useState("")
     const [ selfDescription, setSelfDescription ] = useState("")
     const [ resumeFile, setResumeFile ] = useState(null)
@@ -33,10 +33,30 @@ const Home = () => {
     return (
         <div className='home-page'>
 
+            <nav className='home-topbar'>
+                <div className='brand-mark'>
+                    <span className='brand-mark__icon'>IA</span>
+                    <div>
+                        <strong>Interview AI</strong>
+                        <span>Preparation workspace</span>
+                    </div>
+                </div>
+                <div className='topbar-status'>
+                    <span />
+                    Ready
+                </div>
+            </nav>
+
             {/* Page Header */}
             <header className='page-header'>
-                <h1>Create Your Custom <span className='highlight'>Interview Plan</span></h1>
-                <p>Let our AI analyze the job requirements and your unique profile to build a winning strategy.</p>
+                <p className='eyebrow'>Resume-aware interview preparation</p>
+                <h1>Create a focused <span className='highlight'>interview plan</span></h1>
+                <p>Paste a role, add your resume or profile notes, and get questions, gaps, a roadmap, and an improved resume PDF.</p>
+                <div className='header-metrics'>
+                    <span>Technical drills</span>
+                    <span>Behavioral stories</span>
+                    <span>7-day roadmap</span>
+                </div>
             </header>
 
             {/* Main Card */}
@@ -127,7 +147,7 @@ const Home = () => {
 
                 {/* Card Footer */}
                 <div className='interview-card__footer'>
-                    <span className='footer-info'>AI-Powered Strategy Generation &bull; Approx 30s</span>
+                    <span className='footer-info'>AI-powered strategy generation &bull; approx 30s</span>
                     <button
                         onClick={handleGenerateReport}
                         disabled={!jobDescription.trim() || (!resumeFile && !selfDescription.trim())}
@@ -142,13 +162,21 @@ const Home = () => {
             {/* Recent Reports List */}
             {reports.length > 0 && (
                 <section className='recent-reports'>
-                    <h2>My Recent Interview Plans</h2>
+                    <div className='recent-reports__header'>
+                        <div>
+                            <p className='eyebrow'>History</p>
+                            <h2>Recent interview plans</h2>
+                        </div>
+                        <span>{reports.length} saved</span>
+                    </div>
                     <ul className='reports-list'>
                         {reports.map(report => (
                             <li key={report._id} className='report-item' onClick={() => navigate(`/interview/${report._id}`)}>
-                                <h3>{report.title || 'Untitled Position'}</h3>
-                                <p className='report-meta'>Generated on {new Date(report.createdAt).toLocaleDateString()}</p>
-                                <p className={`match-score ${report.matchScore >= 80 ? 'score--high' : report.matchScore >= 60 ? 'score--mid' : 'score--low'}`}>Match Score: {report.matchScore}%</p>
+                                <div>
+                                    <h3>{report.title || 'Untitled Position'}</h3>
+                                    <p className='report-meta'>Generated {new Date(report.createdAt).toLocaleDateString()}</p>
+                                </div>
+                                <p className={`match-score ${report.matchScore >= 80 ? 'score--high' : report.matchScore >= 60 ? 'score--mid' : 'score--low'}`}>{report.matchScore}% match</p>
                             </li>
                         ))}
                     </ul>

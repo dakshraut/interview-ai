@@ -1,133 +1,121 @@
-// ── Shared Variables (mirrors home.scss theme) ────────────────────────────────
 @use "sass:color";
 
-$bg-page: #0d1117;
-$bg-card: #161b22;
-$bg-panel: #1c2230;
-$bg-input: #1e2535;
-$border-color: #2a3348;
-$text-primary: #e6edf3;
-$text-muted: #7d8590;
-$accent: #ff2d78;
-$font-stack: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-
-// severity palette
-$severity-high: #ff4d4d;
-$severity-medium: #f5a623;
-$severity-low: #3fb950;
+$bg-page: #0b1020;
+$bg-card: #111827;
+$bg-panel: #162033;
+$border-color: rgba(148, 163, 184, 0.18);
+$border-strong: rgba(148, 163, 184, 0.3);
+$text-primary: #f8fafc;
+$text-muted: #94a3b8;
+$accent: #14b8a6;
+$font-stack: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+$severity-high: #fb7185;
+$severity-medium: #f59e0b;
+$severity-low: #22c55e;
 
 *::-webkit-scrollbar {
-    display: none;
+    width: 0;
+    height: 0;
 }
 
-// ── Page Shell ────────────────────────────────────────────────────────────────
 .interview-page {
     width: 100%;
     min-height: 100vh;
-    background-color: $bg-page;
     color: $text-primary;
     font-family: $font-stack;
     display: flex;
     align-items: stretch;
-    padding: 1.5rem;
-    box-sizing: border-box;
+    padding: 1.25rem;
+    background:
+        radial-gradient(circle at top right, rgba(20, 184, 166, 0.16), transparent 28rem),
+        linear-gradient(180deg, #0b1020 0%, #0f172a 100%);
 }
 
-// ── 3-Column Layout ───────────────────────────────────────────────────────────
 .interview-layout {
-    display: flex;
-    width: 100%;
-    max-width: 1280px;
+    display: grid;
+    grid-template-columns: 230px 1px minmax(0, 1fr) 1px 260px;
+    width: min(1360px, 100%);
+    min-height: calc(100vh - 2.5rem);
     margin: 0 auto;
-    background-color: $bg-card;
+    overflow: hidden;
+    background: rgba($bg-card, 0.92);
     border: 1px solid $border-color;
-    border-radius: 1rem;
-    justify-content: space-between;
+    border-radius: 0.9rem;
+    box-shadow: 0 24px 80px rgba(2, 6, 23, 0.42);
+    backdrop-filter: blur(18px);
 }
 
 .interview-divider {
     width: 1px;
-    background-color: $border-color;
-    flex-shrink: 0;
+    background: $border-color;
 }
 
-// ── Left Nav ─────────────────────────────────────────────────────────────────
 .interview-nav {
-    width: 220px;
-    flex-shrink: 0;
-    padding: 1.75rem 1rem;
+    min-width: 0;
+    padding: 1rem;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    gap: 0.25rem;
-
-
-
+    gap: 1rem;
+    background: rgba(15, 23, 42, 0.45);
 
     &__label {
-        font-size: 0.7rem;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
+        margin: 0 0 0.75rem;
+        padding: 0 0.25rem;
         color: $text-muted;
-        padding: 0 0.75rem;
-        margin-bottom: 0.5rem;
+        font-size: 0.72rem;
+        font-weight: 850;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
     }
 
     &__item {
         display: flex;
         align-items: center;
-        gap: 0.6rem;
+        gap: 0.65rem;
         width: 100%;
-        padding: 0.65rem 0.75rem;
-        background: none;
-        border: none;
-        border-radius: 0.5rem;
-        color: $text-muted;
+        min-height: 2.7rem;
+        padding: 0.7rem 0.75rem;
+        color: #cbd5e1;
+        background: transparent;
+        border: 1px solid transparent;
+        border-radius: 0.65rem;
         font-family: $font-stack;
-        font-size: 0.875rem;
+        font-size: 0.9rem;
+        font-weight: 700;
         cursor: pointer;
         text-align: left;
-        transition: background-color 0.15s, color 0.15s;
+        transition: background-color 0.16s, border-color 0.16s, color 0.16s;
 
         &:hover {
-            background-color: $bg-panel;
             color: $text-primary;
+            background: rgba(148, 163, 184, 0.08);
         }
 
         &--active {
-            background-color: rgba($accent, 0.1);
-            color: $accent;
-
-            .interview-nav__icon svg {
-                stroke: $accent;
-            }
+            color: #99f6e4;
+            background: rgba($accent, 0.12);
+            border-color: rgba($accent, 0.24);
         }
     }
 
     &__icon {
         display: flex;
-        align-items: center;
-        flex-shrink: 0;
+        color: currentColor;
+    }
+
+    .button {
+        width: 100%;
+        justify-content: center;
+        border-radius: 0.65rem;
     }
 }
 
-// ── Center Content ────────────────────────────────────────────────────────────
 .interview-content {
-    flex: 1;
-    padding: 1.75rem 2rem;
+    min-width: 0;
+    max-height: calc(100vh - 2.5rem);
     overflow-y: auto;
-    min-height: initial;
-    max-height: calc(100vh - 3rem);
-    padding-bottom: 5rem;
-    align-items: flex-start;
-
-
-
-
-
-
-
+    padding: 1.35rem 1.5rem 2rem;
 
     section {
         min-height: 100%;
@@ -136,266 +124,274 @@ $severity-low: #3fb950;
 
 .content-header {
     display: flex;
-    align-items: baseline;
-    gap: 0.75rem;
-    margin-bottom: 1.5rem;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
     padding-bottom: 1rem;
     border-bottom: 1px solid $border-color;
 
     h2 {
-        font-size: 1.1rem;
-        font-weight: 700;
-        color: $text-primary;
         margin: 0;
+        color: $text-primary;
+        font-size: 1.25rem;
+        line-height: 1.2;
+        font-weight: 850;
+        letter-spacing: 0;
     }
 
     &__count {
-        font-size: 0.8rem;
-        color: $text-muted;
-        background-color: $bg-panel;
-        padding: 0.15rem 0.6rem;
-        border-radius: 2rem;
-        border: 1px solid $border-color;
+        flex-shrink: 0;
+        color: #99f6e4;
+        background: rgba($accent, 0.1);
+        border: 1px solid rgba($accent, 0.22);
+        border-radius: 999px;
+        padding: 0.35rem 0.65rem;
+        font-size: 0.78rem;
+        font-weight: 850;
     }
 }
 
-// ── Question Cards ────────────────────────────────────────────────────────────
 .q-list {
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
+    gap: 0.8rem;
 }
 
 .q-card {
-    background-color: $bg-panel;
+    background: rgba($bg-panel, 0.88);
     border: 1px solid $border-color;
-    border-radius: 0.6rem;
+    border-radius: 0.75rem;
     overflow: hidden;
-    transition: border-color 0.2s;
+    transition: border-color 0.16s, background-color 0.16s;
 
     &:hover {
-        border-color: color.adjust($border-color, $lightness: 8%);
+        border-color: $border-strong;
+        background: rgba(22, 32, 51, 0.98);
     }
 
     &__header {
         display: flex;
         align-items: flex-start;
-        gap: 0.75rem;
-        padding: 0.9rem 1rem;
+        gap: 0.8rem;
+        padding: 1rem;
         cursor: pointer;
         user-select: none;
     }
 
     &__index {
         flex-shrink: 0;
-        font-size: 0.7rem;
-        font-weight: 700;
-        color: $accent;
-        background-color: rgba($accent, 0.1);
-        border: 1px solid rgba($accent, 0.2);
-        border-radius: 0.3rem;
-        padding: 0.15rem 0.4rem;
-        margin-top: 2px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 2.15rem;
+        height: 1.6rem;
+        color: #99f6e4;
+        background: rgba($accent, 0.11);
+        border: 1px solid rgba($accent, 0.22);
+        border-radius: 999px;
+        font-size: 0.72rem;
+        font-weight: 900;
     }
 
     &__question {
         flex: 1;
         margin: 0;
-        font-size: 0.9rem;
-        font-weight: 500;
         color: $text-primary;
+        font-size: 0.96rem;
+        font-weight: 720;
         line-height: 1.5;
     }
 
     &__chevron {
         flex-shrink: 0;
         color: $text-muted;
-        transition: transform 0.2s;
-        margin-top: 2px;
+        transition: transform 0.18s, color 0.18s;
+        margin-top: 0.16rem;
 
         &--open {
+            color: #99f6e4;
             transform: rotate(180deg);
-            color: $accent;
         }
     }
 
     &__body {
-        padding: 0 1rem 1rem;
-        display: flex;
-        flex-direction: column;
-        gap: 0.75rem;
+        display: grid;
+        grid-template-columns: 0.75fr 1.25fr;
+        gap: 0.9rem;
+        padding: 0.95rem 1rem 1rem;
         border-top: 1px solid $border-color;
-        padding-top: 0.75rem;
+        background: rgba(15, 23, 42, 0.55);
     }
 
     &__section {
+        min-width: 0;
         display: flex;
         flex-direction: column;
-        gap: 0.4rem;
+        gap: 0.45rem;
 
         p {
             margin: 0;
-            font-size: 0.835rem;
-            color: color.adjust($text-muted, $lightness: 15%);
-            line-height: 1.6;
+            color: #cbd5e1;
+            font-size: 0.86rem;
+            line-height: 1.65;
         }
     }
 
     &__tag {
-        font-size: 0.68rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.06em;
-        padding: 0.15rem 0.5rem;
-        border-radius: 0.25rem;
         width: fit-content;
+        border-radius: 999px;
+        padding: 0.22rem 0.52rem;
+        font-size: 0.66rem;
+        font-weight: 900;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
 
         &--intention {
-            color: #a78bfa;
-            background-color: rgba(#a78bfa, 0.1);
-            border: 1px solid rgba(#a78bfa, 0.2);
+            color: #bfdbfe;
+            background: rgba(96, 165, 250, 0.11);
+            border: 1px solid rgba(96, 165, 250, 0.2);
         }
 
         &--answer {
-            color: #3fb950;
-            background-color: rgba(#3fb950, 0.1);
-            border: 1px solid rgba(#3fb950, 0.2);
+            color: #bbf7d0;
+            background: rgba($severity-low, 0.1);
+            border: 1px solid rgba($severity-low, 0.2);
         }
     }
 }
 
-// ── Road Map ──────────────────────────────────────────────────────────────────
 .roadmap-list {
+    position: relative;
     display: flex;
     flex-direction: column;
-    gap: 0;
-    position: relative;
+    gap: 0.25rem;
 
-    // vertical timeline line
     &::before {
-        content: '';
+        content: "";
         position: absolute;
-        left: 28px;
-        top: 0;
-        bottom: 0;
+        top: 0.6rem;
+        bottom: 0.6rem;
+        left: 1.12rem;
         width: 2px;
-        background: linear-gradient(to bottom, $accent, rgba($accent, 0.1));
-        border-radius: 1px;
+        background: linear-gradient(to bottom, $accent, rgba($accent, 0.05));
+        border-radius: 999px;
     }
 }
 
 .roadmap-day {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    padding: 0.75rem 0 0.75rem 3.5rem;
     position: relative;
+    padding: 0.5rem 0 0.9rem 3rem;
 
-    // dot on timeline
     &::before {
-        content: '';
+        content: "";
         position: absolute;
-        left: 21px;
-        top: 1.05rem;
-        width: 14px;
-        height: 14px;
+        left: 0.7rem;
+        top: 0.85rem;
+        width: 0.9rem;
+        height: 0.9rem;
         border-radius: 50%;
-        background-color: $bg-card;
+        background: $bg-card;
         border: 2px solid $accent;
+        box-shadow: 0 0 0 4px rgba($accent, 0.1);
     }
 
     &__header {
         display: flex;
         align-items: center;
         gap: 0.6rem;
+        flex-wrap: wrap;
+        margin-bottom: 0.45rem;
     }
 
     &__badge {
-        font-size: 0.7rem;
-        font-weight: 700;
-        color: $accent;
-        background-color: rgba($accent, 0.1);
-        border: 1px solid rgba($accent, 0.25);
-        padding: 0.1rem 0.5rem;
-        border-radius: 2rem;
+        color: #99f6e4;
+        background: rgba($accent, 0.1);
+        border: 1px solid rgba($accent, 0.22);
+        border-radius: 999px;
+        padding: 0.2rem 0.55rem;
+        font-size: 0.72rem;
+        font-weight: 900;
     }
 
     &__focus {
         margin: 0;
-        font-size: 0.95rem;
-        font-weight: 600;
         color: $text-primary;
+        font-size: 1rem;
+        font-weight: 800;
+        line-height: 1.35;
     }
 
     &__tasks {
-        list-style: none;
-        margin: 0;
-        padding: 0;
         display: flex;
         flex-direction: column;
-        gap: 0.35rem;
+        gap: 0.4rem;
+        margin: 0;
+        padding: 0;
+        list-style: none;
 
         li {
             display: flex;
             align-items: flex-start;
-            gap: 0.5rem;
-            font-size: 0.845rem;
-            color: color.adjust($text-muted, $lightness: 12%);
-            line-height: 1.5;
+            gap: 0.55rem;
+            color: #cbd5e1;
+            font-size: 0.88rem;
+            line-height: 1.55;
         }
     }
 
     &__bullet {
         flex-shrink: 0;
-        width: 5px;
-        height: 5px;
+        width: 0.36rem;
+        height: 0.36rem;
+        margin-top: 0.56rem;
         border-radius: 50%;
-        background-color: $text-muted;
-        margin-top: 8px;
+        background: $text-muted;
     }
 }
 
-// ── Right Sidebar ─────────────────────────────────────────────────────────────
 .interview-sidebar {
-    width: 240px;
-    flex-shrink: 0;
-    padding: 1.75rem 1.25rem;
+    min-width: 0;
+    padding: 1rem;
     display: flex;
     flex-direction: column;
-    gap: 1.25rem;
+    gap: 1rem;
+    background: rgba(15, 23, 42, 0.45);
 }
 
 .sidebar-divider {
     height: 1px;
-    background-color: $border-color;
+    background: $border-color;
 }
 
-// Match Score
 .match-score {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.6rem;
+    gap: 0.8rem;
+    padding: 0.4rem 0;
 
     &__label {
-        font-size: 0.75rem;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-        color: $text-muted;
-        margin: 0;
         align-self: flex-start;
+        margin: 0;
+        color: $text-muted;
+        font-size: 0.72rem;
+        font-weight: 850;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
     }
 
     &__ring {
-        width: 90px;
-        height: 90px;
+        width: 118px;
+        height: 118px;
         border-radius: 50%;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        border: 4px solid;
+        background: rgba(15, 23, 42, 0.75);
+        border: 5px solid;
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
 
         &.score--high {
             border-color: $severity-low;
@@ -411,39 +407,39 @@ $severity-low: #3fb950;
     }
 
     &__value {
-        font-size: 1.6rem;
-        font-weight: 800;
         color: $text-primary;
+        font-size: 2rem;
+        font-weight: 900;
         line-height: 1;
     }
 
     &__pct {
-        font-size: 0.75rem;
         color: $text-muted;
-        margin-top: -2px;
+        font-size: 0.8rem;
+        margin-top: -0.1rem;
     }
 
     &__sub {
         margin: 0;
-        font-size: 0.75rem;
-        color: $severity-low;
+        color: #cbd5e1;
+        font-size: 0.78rem;
+        line-height: 1.45;
         text-align: center;
     }
 }
 
-// Skill Gaps
 .skill-gaps {
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
+    gap: 0.8rem;
 
     &__label {
-        font-size: 0.75rem;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-        color: $text-muted;
         margin: 0;
+        color: $text-muted;
+        font-size: 0.72rem;
+        font-weight: 850;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
     }
 
     &__list {
@@ -454,28 +450,120 @@ $severity-low: #3fb950;
 }
 
 .skill-tag {
-    font-size: 0.775rem;
-    font-weight: 500;
-    padding: 0.3rem 0.7rem;
-    border-radius: 0.4rem;
     border: 1px solid;
+    border-radius: 999px;
+    padding: 0.36rem 0.65rem;
+    font-size: 0.78rem;
+    font-weight: 760;
     cursor: default;
 
     &--high {
-        color: $severity-high;
-        background-color: rgba($severity-high, 0.1);
-        border-color: rgba($severity-high, 0.25);
+        color: #fecdd3;
+        background: rgba($severity-high, 0.1);
+        border-color: rgba($severity-high, 0.24);
     }
 
     &--medium {
-        color: $severity-medium;
-        background-color: rgba($severity-medium, 0.1);
-        border-color: rgba($severity-medium, 0.25);
+        color: #fde68a;
+        background: rgba($severity-medium, 0.1);
+        border-color: rgba($severity-medium, 0.24);
     }
 
     &--low {
-        color: $severity-low;
-        background-color: rgba($severity-low, 0.1);
-        border-color: rgba($severity-low, 0.25);
+        color: #bbf7d0;
+        background: rgba($severity-low, 0.1);
+        border-color: rgba($severity-low, 0.24);
+    }
+}
+
+.loading-screen {
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    color: $text-primary;
+    background: $bg-page;
+
+    h1 {
+        font-size: 1.2rem;
+    }
+}
+
+@media (max-width: 1080px) {
+    .interview-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .interview-divider {
+        display: none;
+    }
+
+    .interview-nav {
+        position: sticky;
+        top: 0;
+        z-index: 5;
+        flex-direction: row;
+        align-items: center;
+        overflow-x: auto;
+        border-bottom: 1px solid $border-color;
+
+        .nav-content {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        &__label {
+            display: none;
+        }
+
+        &__item {
+            white-space: nowrap;
+        }
+
+        .button {
+            width: auto;
+            white-space: nowrap;
+        }
+    }
+
+    .interview-content {
+        max-height: none;
+    }
+
+    .interview-sidebar {
+        border-top: 1px solid $border-color;
+    }
+}
+
+@media (max-width: 720px) {
+    .interview-page {
+        padding: 0.75rem;
+    }
+
+    .interview-layout {
+        min-height: calc(100vh - 1.5rem);
+        border-radius: 0.75rem;
+    }
+
+    .interview-nav {
+        align-items: stretch;
+        flex-direction: column;
+
+        .nav-content {
+            overflow-x: auto;
+        }
+    }
+
+    .interview-content {
+        padding: 1rem;
+    }
+
+    .content-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .q-card__body {
+        grid-template-columns: 1fr;
     }
 }

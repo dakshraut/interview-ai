@@ -1,20 +1,29 @@
-.button{
-
+.button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 2.65rem;
     border: none;
     outline: none;
-    padding-inline: 1.5rem;
-    padding-block: 0.75rem;
-    border-radius: 1rem;
+    padding: 0.75rem 1.1rem;
+    border-radius: 0.65rem;
     cursor: pointer;
+    font: inherit;
+    font-weight: 800;
+    transition: transform 0.14s ease, filter 0.14s ease, box-shadow 0.14s ease;
 
-    transition: all 0.3s ease-in-out;
-
-    &.primary-button{
-        background-color: #e1034d;
-        color: white;
+    &.primary-button {
+        background: linear-gradient(135deg, #5eead4 0%, #14b8a6 100%);
+        color: #05201c;
+        box-shadow: 0 14px 34px rgba(20, 184, 166, 0.18);
     }
 
-    &:active{
-        transform: scale(0.9);
+    &:hover {
+        filter: brightness(1.04);
+    }
+
+    &:active {
+        transform: translateY(1px) scale(0.99);
     }
 }
