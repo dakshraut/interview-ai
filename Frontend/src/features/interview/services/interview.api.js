@@ -57,3 +57,19 @@ export const generateResumePdf = async ({ interviewReportId }) => {
 
     return response.data
 }
+
+
+/**
+ * @description Service to generate coaching feedback for a practice answer.
+ */
+export const generateAnswerFeedback = async ({ interviewReportId, question, answer, intention, idealAnswer, questionType }) => {
+    const response = await api.post(`/api/interview/report/${interviewReportId}/answer-feedback`, {
+        question,
+        answer,
+        intention,
+        idealAnswer,
+        questionType
+    })
+
+    return response.data
+}

@@ -64,6 +64,39 @@ const preparationPlanSchema = new mongoose.Schema({
     } ]
 })
 
+const projectStorySchema = new mongoose.Schema({
+    projectName: {
+        type: String,
+        required: [ true, "Project name is required" ]
+    },
+    positioning: {
+        type: String,
+        required: [ true, "Project positioning is required" ]
+    },
+    pitch: {
+        type: String,
+        required: [ true, "Project pitch is required" ]
+    },
+    technicalDeepDive: {
+        type: String,
+        required: [ true, "Technical deep dive is required" ]
+    },
+    architecture: [ {
+        type: String,
+        required: [ true, "Architecture item is required" ]
+    } ],
+    challenges: [ {
+        type: String,
+        required: [ true, "Challenge item is required" ]
+    } ],
+    followUps: [ {
+        type: String,
+        required: [ true, "Follow-up question is required" ]
+    } ]
+}, {
+    _id: false
+})
+
 const interviewReportSchema = new mongoose.Schema({
     jobDescription: {
         type: String,
@@ -84,6 +117,7 @@ const interviewReportSchema = new mongoose.Schema({
     behavioralQuestions: [ behavioralQuestionSchema ],
     skillGaps: [ skillGapSchema ],
     preparationPlan: [ preparationPlanSchema ],
+    projectStories: [ projectStorySchema ],
     user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "users"

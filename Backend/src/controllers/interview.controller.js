@@ -1,4 +1,4 @@
-const { generateInterviewReport, generateResumePdf } = require("../services/ai.service")
+const { generateInterviewReport, generateResumePdf, generateAnswerFeedback } = require("../services/ai.service")
 const interviewReportModel = require("../models/interviewReport.model")
 const { parseResume } = require("../services/resumeParser.service")
 
@@ -107,4 +107,39 @@ async function generateResumePdfController(req, res) {
     res.send(pdfBuffer)
 }
 
-module.exports = { generateInterViewReportController, getInterviewReportByIdController, getAllInterviewReportsController, generateResumePdfController }
+async function generateAnswerFeedbackController(req, res) {
+    const { interviewReportId } = req.params
+    const { question, answer, intention, idealAnswer, questionType } = req.body
+
+    const interviewReport = await interviewReportModel.findOne({ _id: interviewReportId, user: req.user.id })
+
+    if (!interviewReport) {
+        return res.status(404).json({
+            message: "Interview report not found."
+        })
+    }
+
+    if (!question?.trim() || !answer?.trim()) {
+        return res.status(400).json({
+            message: "Question and answer are required."
+        })
+    }
+
+    const feedback = await generateAnswerFeedback({
+        question,
+        answer,
+        intention,
+        idealAnswer,
+        questionType,
+        resume: interviewReport.resume,
+        selfDescription: interviewReport.selfDescription,
+        jobDescription: interviewReport.jobDescription
+    })
+
+    res.status(200).json({
+        message: "Answer feedback generated successfully.",
+        feedback
+    })
+}
+
+module.exports = { generateInterViewReportController, getInterviewReportByIdController, getAllInterviewReportsController, generateResumePdfController, generateAnswerFeedbackController }

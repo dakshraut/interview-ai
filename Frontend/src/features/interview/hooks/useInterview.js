@@ -1,4 +1,4 @@
-import { getAllInterviewReports, generateInterviewReport, getInterviewReportById, generateResumePdf } from "../services/interview.api"
+import { getAllInterviewReports, generateInterviewReport, getInterviewReportById, generateResumePdf, generateAnswerFeedback } from "../services/interview.api"
 import { useContext, useEffect, useState } from "react"
 import { InterviewContext } from "../interview.context-value"
 import { useParams } from "react-router"
@@ -84,6 +84,12 @@ export const useInterview = () => {
         }
     }
 
+    const getAnswerFeedback = async ({ interviewReportId, question, answer, intention, idealAnswer, questionType }) => {
+        setError("")
+        const response = await generateAnswerFeedback({ interviewReportId, question, answer, intention, idealAnswer, questionType })
+        return response.feedback
+    }
+
     useEffect(() => {
         if (interviewId) {
             getReportById(interviewId)
@@ -93,6 +99,6 @@ export const useInterview = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [ interviewId ])
 
-    return { loading, error, report, reports, generateReport, getReportById, getReports, getResumePdf }
+    return { loading, error, report, reports, generateReport, getReportById, getReports, getResumePdf, getAnswerFeedback }
 
 }

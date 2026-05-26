@@ -24,11 +24,29 @@ const interviewReportSchema = z.object({
         focus: z.string(),
         tasks: z.array(z.string())
     })).min(7),
+    projectStories: z.array(z.object({
+        projectName: z.string(),
+        positioning: z.string(),
+        pitch: z.string(),
+        technicalDeepDive: z.string(),
+        architecture: z.array(z.string()),
+        challenges: z.array(z.string()),
+        followUps: z.array(z.string())
+    })).min(2),
     title: z.string()
 })
 
 const resumePdfSchema = z.object({
     html: z.string()
+})
+
+const answerFeedbackSchema = z.object({
+    score: z.number().min(0).max(100),
+    verdict: z.string(),
+    strengths: z.array(z.string()),
+    improvements: z.array(z.string()),
+    improvedAnswer: z.string(),
+    followUpQuestions: z.array(z.string())
 })
 
 function getAiClient() {
@@ -224,12 +242,78 @@ function buildPreparationPlan(requiredSkills, missingSkills) {
     ]
 }
 
+function buildProjectStories({ resume, selfDescription, requiredSkills }) {
+    const targetSkills = (requiredSkills.length ? requiredSkills : [ "javascript", "react", "node", "rest api" ]).map(displaySkill)
+    const profileText = `${resume || ""} ${selfDescription || ""}`
+    const projectSignals = profileText
+        .split(/\n+/)
+        .map(line => line.replace(/\s+/g, " ").trim())
+        .filter(line => /\b(project|built|developed|implemented|created|designed|optimized|app|platform|system)\b/i.test(line))
+        .slice(0, 2)
+
+    const projectNames = projectSignals.length
+        ? projectSignals.map((line, index) => line.split(/[|:-]/)[0].slice(0, 54).trim() || `Project ${index + 1}`)
+        : [ "Primary Resume Project", "Most Relevant Technical Project" ]
+
+    return projectNames.map((projectName, index) => ({
+        projectName,
+        positioning: `Use this story to prove hands-on ownership with ${targetSkills.slice(0, 3).join(", ")} and practical product thinking.`,
+        pitch: `I built ${projectName} to solve a clear user or workflow problem, focusing on reliable implementation, clean data flow, and measurable improvements. My role covered the main technical decisions, debugging, and turning requirements into a working result.`,
+        technicalDeepDive: `Explain the user flow first, then cover the frontend state, API contract, validation, persistence layer, error handling, and the tradeoff you made to keep the solution maintainable.`,
+        architecture: [
+            `Frontend or client layer captures user intent and handles loading, empty, and error states.`,
+            `Backend/API layer validates input, applies business logic, and returns predictable response shapes.`,
+            `Data layer stores the core entities and supports the most common read/write paths.`
+        ],
+        challenges: [
+            "Name one bug or edge case, the evidence you gathered, and how you verified the fix.",
+            "Describe one performance, security, or maintainability tradeoff you considered.",
+            index === 0 ? "Connect the result to user impact, saved time, accuracy, or reliability." : "Explain what you would improve next if you had another week."
+        ],
+        followUps: [
+            "What was the hardest technical decision in this project?",
+            "How would you scale or secure this if real users depended on it?",
+            "What would you refactor after reviewing the code today?"
+        ]
+    }))
+}
+
+function normalizePreparationPlan(plan = []) {
+    return plan
+        .filter(day => day && day.focus && Array.isArray(day.tasks))
+        .sort((a, b) => (Number(a.day) || 0) - (Number(b.day) || 0))
+        .map((day, index) => ({
+            ...day,
+            day: index + 1,
+            tasks: day.tasks.filter(Boolean).slice(0, 3)
+        }))
+}
+
+function normalizeProjectStories(stories = [], fallbackArgs = {}) {
+    const fallbackStories = buildProjectStories(fallbackArgs)
+    const validStories = stories
+        .filter(story => story && story.projectName && story.pitch && story.technicalDeepDive)
+        .map(story => ({
+            projectName: story.projectName,
+            positioning: story.positioning || "Use this story to prove ownership, decision-making, and role fit.",
+            pitch: story.pitch,
+            technicalDeepDive: story.technicalDeepDive,
+            architecture: Array.isArray(story.architecture) && story.architecture.length ? story.architecture.slice(0, 4) : fallbackStories[0].architecture,
+            challenges: Array.isArray(story.challenges) && story.challenges.length ? story.challenges.slice(0, 4) : fallbackStories[0].challenges,
+            followUps: Array.isArray(story.followUps) && story.followUps.length ? story.followUps.slice(0, 4) : fallbackStories[0].followUps
+        }))
+
+    return [ ...validStories, ...fallbackStories ].slice(0, 3)
+}
+
 function buildFallbackReport({ resume, selfDescription, jobDescription }) {
     const combinedProfile = `${resume || ""} ${selfDescription || ""}`.toLowerCase()
     const requiredSkills = extractSkills(jobDescription)
     const matchedSkills = requiredSkills.filter(skill => textHasAlias(combinedProfile, SKILL_CATALOG.find(item => item.key === skill)?.aliases || [ skill ]))
     const missingSkills = requiredSkills.filter(skill => !textHasAlias(combinedProfile, SKILL_CATALOG.find(item => item.key === skill)?.aliases || [ skill ]))
     const matchScore = calculateMatchScore({ resume, selfDescription, jobDescription, requiredSkills, matchedSkills, missingSkills })
+
+    const projectStories = buildProjectStories({ resume, selfDescription, requiredSkills })
 
     return {
         title: "Target Role Interview Plan",
@@ -240,7 +324,8 @@ function buildFallbackReport({ resume, selfDescription, jobDescription }) {
             skill: displaySkill(skill),
             severity: missingSkills.length ? (index < 2 ? "high" : "medium") : "low"
         })),
-        preparationPlan: buildPreparationPlan(requiredSkills, missingSkills)
+        preparationPlan: normalizePreparationPlan(buildPreparationPlan(requiredSkills, missingSkills)),
+        projectStories
     }
 }
 
@@ -260,6 +345,7 @@ Return only valid JSON matching the schema. Include:
 - at least 5 behavioral questions
 - practical skill gaps with severity
 - a 7 day preparation roadmap
+- at least 2 projectStories that turn resume projects into interview-ready narratives
 - a concise target role title inferred from the job description
 
 Quality requirements:
@@ -269,7 +355,9 @@ Quality requirements:
 - Each technical answer should be an interview-ready answer strategy: what to mention, tradeoffs, edge cases, tests, and signals of seniority where relevant.
 - Behavioral questions must cover real hiring signals: ownership, ambiguity, feedback, debugging, learning speed, teamwork, and deadlines.
 - Behavioral answers must use a STAR-style structure and tell the candidate what evidence to include.
-- Roadmap tasks must be practical and output-oriented. Each day should include 3 concrete tasks that create a deliverable, practice loop, or measurable improvement.
+- Roadmap days must be exactly Day 1 through Day 7 in order. Do not start at Day 2, Day 3, or any later day.
+- Roadmap tasks must be practical and output-oriented. Each day should include exactly 3 concrete tasks that create a deliverable, practice loop, or measurable improvement.
+- Project stories must be specific to the candidate evidence. Each story needs a short pitch, a technical deep dive, architecture talking points, challenges, and interviewer follow-up questions.
 - Do not repeat the same advice across sections.
 
 Resume:
@@ -291,7 +379,91 @@ ${jobDescription}
         }
     })
 
-    return interviewReportSchema.parse(parseJsonResponse(response.text))
+    const report = interviewReportSchema.parse(parseJsonResponse(response.text))
+    return {
+        ...report,
+        preparationPlan: normalizePreparationPlan(report.preparationPlan),
+        projectStories: normalizeProjectStories(report.projectStories, { resume, selfDescription, requiredSkills: extractSkills(jobDescription) })
+    }
+}
+
+function buildFallbackAnswerFeedback({ question, answer, idealAnswer }) {
+    const wordCount = answer.trim().split(/\s+/).filter(Boolean).length
+    const hasStructure = /\b(context|situation|task|action|result|first|then|finally|because)\b/i.test(answer)
+    const hasEvidence = /\b\d+%|\b\d+\+|\b\d+\s*(user|client|project|api|day|week|month|second|minute)/i.test(answer)
+    const hasTradeoff = /\b(tradeoff|edge case|test|verify|metric|security|scale|performance|maintain)\b/i.test(answer)
+    const score = Math.max(35, Math.min(92, 38 + Math.min(28, wordCount) + (hasStructure ? 12 : 0) + (hasEvidence ? 10 : 0) + (hasTradeoff ? 9 : 0)))
+
+    return {
+        score,
+        verdict: score >= 80 ? "Strong answer with clear interview signal." : score >= 62 ? "Good base answer, but it needs sharper evidence." : "Needs more structure, detail, and proof.",
+        strengths: [
+            wordCount >= 35 ? "You gave enough material to evaluate instead of staying too vague." : "You have a clear starting point for the answer.",
+            hasStructure ? "The answer has some sequencing, which makes it easier to follow." : "The core idea can become stronger with a simple beginning, middle, and result."
+        ],
+        improvements: [
+            hasEvidence ? "Tie the metric directly to your action so the impact feels earned." : "Add one measurable result, scale detail, or before/after improvement.",
+            hasTradeoff ? "Close with how you verified the decision worked." : "Mention one tradeoff, edge case, test, or debugging step."
+        ],
+        improvedAnswer: `I would answer this by first stating the context for "${question}", then naming the exact responsibility I owned. I would describe the decision or implementation steps, include one tradeoff or failure mode, and close with the result. A strong version should include evidence from my project and connect back to this role. ${idealAnswer ? `I would also make sure to cover: ${idealAnswer}` : ""}`.trim(),
+        followUpQuestions: [
+            "What specific evidence or metric proves your answer?",
+            "What tradeoff did you consider and why?",
+            "What would you improve if you faced the same situation again?"
+        ]
+    }
+}
+
+async function generateAnswerFeedback({ question, answer, intention, idealAnswer, questionType, resume, selfDescription, jobDescription }) {
+    const ai = getAiClient()
+
+    if (!answer?.trim()) {
+        throw new Error("Answer is required.")
+    }
+
+    if (!ai) {
+        return buildFallbackAnswerFeedback({ question, answer, idealAnswer })
+    }
+
+    const prompt = `
+Review this candidate's interview answer.
+
+Return only valid JSON matching the schema:
+- score from 0 to 100
+- verdict as one short sentence
+- strengths as 2-3 concise bullets
+- improvements as 2-4 concise bullets
+- improvedAnswer as a polished interview answer the candidate can adapt
+- followUpQuestions as 3 likely interviewer follow-ups
+
+Question type: ${questionType || "general"}
+Question: ${question}
+Question intention: ${intention || "Not provided"}
+Reference answer strategy: ${idealAnswer || "Not provided"}
+
+Candidate answer:
+${answer}
+
+Candidate resume:
+${resume || "No resume provided"}
+
+Self description:
+${selfDescription || "No self description provided"}
+
+Job description:
+${jobDescription || "No job description provided"}
+`
+
+    const response = await ai.models.generateContent({
+        model: process.env.GEMINI_MODEL || "gemini-2.5-flash",
+        contents: prompt,
+        config: {
+            responseMimeType: "application/json",
+            responseSchema: zodToJsonSchema(answerFeedbackSchema)
+        }
+    })
+
+    return answerFeedbackSchema.parse(parseJsonResponse(response.text))
 }
 
 async function generatePdfFromHtml(htmlContent) {
@@ -632,4 +804,4 @@ ${jobDescription}
     return generatePdfFromHtml(jsonContent.html)
 }
 
-module.exports = { generateInterviewReport, generateResumePdf }
+module.exports = { generateInterviewReport, generateResumePdf, generateAnswerFeedback }
